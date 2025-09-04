@@ -143,11 +143,13 @@ class GraphExtractor:
     async def _process_document(
         self, text: str, prompt_variables: dict[str, str]
     ) -> str:
+        all_vars = {
+            **prompt_variables,
+            self._input_text_key: text,
+        }
+        extraction_prompt = Template(self._extraction_prompt).render(all_vars)
         response = await self._model.achat(
-            self._extraction_prompt.format(**{
-                **prompt_variables,
-                self._input_text_key: text,
-            }),
+            extraction_prompt
         )
         results = response.output.content or ""
 
